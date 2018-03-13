@@ -15,8 +15,12 @@
                     {{Form::textarea('content', '', ['id'=>'article-ckeditor','class'=>'form-control', 'placeholder'=>'Enter the content'])}}
                 </div>
                 <div class="form-group">
+                    {{Form::label('category', 'Category')}}
+                    {{Form::select('category_id', $categories, null, ['class'=>'form-control', 'placeholder'=>'Select a category'])}}
+                </div> 
+                <div class="form-group">
                     {{Form::label('featured image', 'Featured Image')}}
-                    {{Form::file('featured_image', '')}}
+                    {{Form::file('featured_image')}}
                 </div>
                 {{Form::submit('Submit', ['class'=>'btn btn-primary'])}}
             {!! Form::close() !!}

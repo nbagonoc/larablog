@@ -18,8 +18,8 @@
                 @foreach($categories as $category)
                     <tr>
                         <th>{{$category->name}}</th>
-                        <th><a href="" class="btn btn-xs btn-default">edit</a></th>
-                        <th><a href="" class="btn btn-xs btn-danger">delete</a></th>
+                        <th><a href="{{ route('category.edit',['id'=> $category->id]) }}" class="btn btn-xs btn-default">edit</a></th>
+                        <th><a href="{{ route('category.delete',['id'=> $category->id]) }}" class="btn btn-xs btn-danger">delete</a></th>
                     </tr>
                 @endforeach
                 </tbody>

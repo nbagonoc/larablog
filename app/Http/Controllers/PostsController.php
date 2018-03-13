@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Category;
 
 class PostsController extends Controller
 {
@@ -14,7 +15,8 @@ class PostsController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::orderBy('created_at','dsc')->paginate(5);
+        return view('admin.posts.index')->with('posts', $posts);
     }
 
     /**
@@ -24,7 +26,8 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::pluck('name', 'id');
+        return view('admin.posts.create')->with('categories', $categories);
     }
 
     /**
@@ -39,16 +42,36 @@ class PostsController extends Controller
         $this->validate($request, [
             'title' => 'required|max:255',
             'content' => 'required',
+            'category_id' => 'required',
             'featured_image' => 'required|image|nullable|max:1999'
         ]);
-        //datadump
-        //dd($request->all());
+        
+        //featured image
+        //get filename with extension
+        $featured_image_name_ext = $request->file('featured_image')->getClientOriginalName();
+        //get filename
+        $featured_image_name = pathinfo($featured_image_name_ext, PATHINFO_FILENAME);
+        //get extension
+        $ext = $request->file('featured_image')->getClientOriginalExtension();
+        //filename to store
+        $featured_image_to_store = $featured_image_name.'_'.time().'.'.$ext;
+        //upload image
+        $path  = $request->file('featured_image')->storeAs('public/featured_images', $featured_image_to_store);
+         
         //create new post
         $post = new Post;
-        $post->title = $request->input('title');
-        $post->content = $request->input('content');
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->category_id = $request->category_id;
+        $post->featured_image = $featured_image_to_store; 
         $post->save();
-   }
+
+        //redirect
+        return redirect()->route('post.create')->with('success','Post created');
+
+        //datadump
+        //dd($request->all());
+   }  
 
     /**
      * Display the specified resource.
@@ -58,7 +81,8 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::find($id);
+        return view('admin.posts.show')->with('post', $post);
     }
 
     /**
